@@ -1,0 +1,157 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Hangman
+{
+    class Program
+    {
+        public static string GenerateWord()
+        {
+            string str = "abandon,about,achieve,action,actually,admire,afraid,afternoon,almost,always,although,amazing,angry,anxiety,annual,another,approve,awful,bedroom,behind,before,belong,benefit,between,breakfast,brief,careful,certain,character,circumstance,clearly,comfortable,community,conclusion,connection,constantly,cookie,creative,immaculate,impeccable,opportune,erraneous,currently,demonstration,dimention,space,economy,embrace,limit,mango,papaya,strawberry,raspberry,mogul,magnanimous,anxiety,emotion,engineer,fastidious,evolution,famous,female,fortune,friendship,galaxy,painting,habit,honest,horizon,imply,incentive,impossible,imagine,dream,desperate,independent,influence,inspire,legendary,lemonade,lucky,love,zest,ardor,insatiable,meanwhile,mistake,modest,adroit,amiable,belligerent,benevolent,bombastic,futile,ambiguous,equivocal,dormant,divergent,esoteric,explicit,innuendo,implicit,instigate,jeopardize,mercurial,notorious,painstaking,serendipity,sycophant,ubiquitous,fathom,vocation,serenity,maverick,alleviate,entice,enigma,nebula,supernova,ludicrous,innate,dormant,cognitive,program,computer,revolution,change";
+
+            List<string> words = str.Split(',').ToList();
+
+            Random rnd = new Random();
+            string word = words[rnd.Next(0, words.Count)];
+            return word;
+        }
+        public static List<char> ToListWord(string word)
+        {
+            List<char> letters = new List<char>();
+            for (int i = 0; i < word.Length; i++)
+            {
+                letters.Add(word[i]);
+            }
+            return letters;
+        }
+        public static List<char> WordImage(List<char> word)
+        {
+            List<char> dashes = new List<char>();
+            foreach (var l in word)
+            {
+                dashes.Add('_');
+            }
+            return dashes;
+        }
+        public static bool Check(char letter, List<char> word)
+        {
+            if (word.Contains(letter))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        public static void WriteLetters(char letter, List<char> word, List<char> dashes)
+        {
+           for (int i = 0; i < word.Count; i++)
+                {
+                    if (word[i] == letter)
+                    {
+                        dashes.RemoveAt(i);
+                        dashes.Insert(i, letter);
+                    }
+                }         
+        }
+        public static bool CheckIfWin(List<char> word, List<char> dashes)
+        {
+            bool check = true;
+            for (int i = 0; i < word.Count; i++)
+            {
+                if(word[i] == dashes[i])
+                {
+                    continue;
+                }
+                else
+                {
+                    check = false;
+                    break;
+                }
+            }
+            return check;
+        }
+
+        static void Main(string[] args)
+        {
+            Console.WriteLine("Welcome!");
+            Console.WriteLine("If you would like to give up at any point, just enter a dot.");
+            Console.WriteLine("Please enter a letter:");
+           while (true)
+            {
+                List<char> word = ToListWord(GenerateWord());
+                List<char> dashes = WordImage(word);
+                int mistakes = 0;
+               while(true)
+                {
+                    try
+                    {
+                        if (mistakes == 6)
+                        {
+                            Console.WriteLine("You lose :(");
+                            Console.Write("The correct word is ");
+                            foreach (var w in word)
+                            {
+                                Console.Write(w);
+                            }
+                            Console.WriteLine();
+                            break;
+                        }
+                        foreach (var l in dashes)
+                        {
+                            Console.Write(l);
+                        }
+                        Console.WriteLine();
+
+                        if (CheckIfWin(word, dashes) == true)
+                        {
+                            Console.WriteLine("You win!");
+                            break;
+                        }
+                        var letter = char.Parse(Console.ReadLine());
+
+                        if (letter == '.')
+                        {
+                            Console.Write("The correct word is ");
+                            foreach (var w in word)
+                            {
+                                Console.Write(w);
+                            }
+                            Console.WriteLine();
+                            break;
+                        }
+
+                        if (Check(letter, word) == false)
+                        {
+                            mistakes++;
+                        }
+                        else if (Check(letter, word) == true)
+                        {
+                            WriteLetters(letter, word, dashes);
+                        }
+                    }
+                    catch (FormatException)
+                    {
+                        Console.WriteLine("Please type a character.");
+                    }
+                }
+               
+                Console.WriteLine("Would you like to continue?");
+                var answer = Console.ReadLine();
+                if (answer == "yes")
+                {
+                    continue;
+                }
+                else
+                {
+                    Console.WriteLine("Thank you for playing.");
+                    break;
+                }
+            }
+        }
+    }
+}
